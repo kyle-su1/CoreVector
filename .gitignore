@@ -39,3 +39,23 @@
 
 # debug information files
 *.dwo
+
+# CMake
+build/
+cmake-build-*/
+CMakeUserPresets.json
+
+# clangd / LSP cache
+.cache/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*~
+
+# Test artifacts
+*.bin
+
+# macOS
+.DS_Store
