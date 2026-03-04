@@ -17,7 +17,6 @@ inline float L2Sqr(const Vector &a, const Vector &b) {
   constexpr size_t simd_size = xsimd::simd_type<float>::size;
   const size_t vec_size = size - (size % simd_size);
 
-  auto va = xsimd::batch<float>::broadcast(0.0f);
   auto dist_batch = xsimd::batch<float>::broadcast(0.0f);
 
   size_t i = 0;

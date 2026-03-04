@@ -65,6 +65,14 @@ add_executable(test_mmap tests/test_mmap.cpp)
 target_link_libraries(test_mmap PRIVATE corevector gtest gtest_main)
 gtest_discover_tests(test_mmap)
 
+add_executable(test_vector_math tests/test_vector_math.cpp)
+target_link_libraries(test_vector_math PRIVATE corevector gtest gtest_main)
+gtest_discover_tests(test_vector_math)
+
+add_executable(test_flat_index tests/test_flat_index.cpp)
+target_link_libraries(test_flat_index PRIVATE corevector gtest gtest_main)
+gtest_discover_tests(test_flat_index)
+
 # Benchmarks
 add_executable(benchmark_math benchmarks/benchmark_math.cpp)
 target_link_libraries(benchmark_math PRIVATE corevector benchmark::benchmark benchmark::benchmark_main)
