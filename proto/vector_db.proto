@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package corevector.api;
+
+// The VectorDB service definition
+service VectorDB {
+  // Insert one or more vectors into the index
+  rpc Insert(InsertRequest) returns (InsertResponse);
+
+  // Search for the k nearest neighbors of a query vector
+  rpc Search(SearchRequest) returns (SearchResponse);
+
+  // Save the index to a binary file on disk
+  rpc Save(SaveRequest) returns (SaveResponse);
+
+  // Load the index from a binary file on disk
+  rpc Load(LoadRequest) returns (LoadResponse);
+}
+
+// ----- Insert -----
+
+message InsertRequest {
+  repeated VectorData vectors = 1;
+}
+
+message VectorData {
+  repeated float values = 1;
+}
+
+message InsertResponse {
+  int64 total_vectors = 1; // Total vectors in the index after insertion
+}
+
+// ----- Search -----
+
+message SearchRequest {
+  repeated float query = 1;  // The query vector
+  int32 k = 2;               // Number of nearest neighbors to return
+}
+
+message SearchResponse {
+  repeated SearchResult results = 1;
+}
+
+message SearchResult {
+  int64 id = 1;
+  float distance = 2;
+}
+
+// ----- Save -----
+
+message SaveRequest {
+  string filename = 1;
+}
+
+message SaveResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// ----- Load -----
+
+message LoadRequest {
+  string filename = 1;
+}
+
+message LoadResponse {
+  bool success = 1;
+  string message = 2;
+  int64 total_vectors = 3;
+}

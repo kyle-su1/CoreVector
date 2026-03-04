@@ -59,3 +59,10 @@ CMakeUserPresets.json
 
 # macOS
 .DS_Store
+
+# Python Environments
+venv/
+.venv/
+env/
+__pycache__/
+*.pyc
