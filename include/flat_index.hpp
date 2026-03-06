@@ -16,6 +16,8 @@
 namespace corevector {
 
 // Result of a nearest neighbor search
+#ifndef COREVECTOR_SEARCH_RESULT_DEFINED
+#define COREVECTOR_SEARCH_RESULT_DEFINED
 struct SearchResult {
   size_t id;
   float distance;
@@ -24,6 +26,7 @@ struct SearchResult {
     return distance < other.distance; // Max-heap behavior
   }
 };
+#endif
 
 class FlatIndex {
 public:

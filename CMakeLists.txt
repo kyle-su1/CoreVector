@@ -118,6 +118,10 @@ add_executable(test_flat_index tests/test_flat_index.cpp)
 target_link_libraries(test_flat_index PRIVATE corevector gtest gtest_main)
 gtest_discover_tests(test_flat_index)
 
+add_executable(test_hnsw tests/test_hnsw.cpp)
+target_link_libraries(test_hnsw PRIVATE corevector gtest gtest_main)
+gtest_discover_tests(test_hnsw)
+
 # Benchmarks
 add_executable(benchmark_math benchmarks/benchmark_math.cpp)
 target_link_libraries(benchmark_math PRIVATE corevector benchmark::benchmark benchmark::benchmark_main)
@@ -128,11 +132,15 @@ target_link_libraries(benchmark_concurrency PRIVATE corevector benchmark::benchm
 add_executable(benchmark_network benchmarks/benchmark_network.cpp)
 target_link_libraries(benchmark_network PRIVATE corevector corevector_proto benchmark::benchmark benchmark::benchmark_main)
 
+add_executable(benchmark_hnsw benchmarks/benchmark_hnsw.cpp)
+target_link_libraries(benchmark_hnsw PRIVATE corevector benchmark::benchmark benchmark::benchmark_main)
+
 # Compiler optimizations for release builds
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|GNU")
     target_compile_options(benchmark_math PRIVATE -O3 -march=native -ffast-math)
     target_compile_options(benchmark_concurrency PRIVATE -O3 -march=native -ffast-math)
     target_compile_options(benchmark_network PRIVATE -O3 -march=native -ffast-math)
+    target_compile_options(benchmark_hnsw PRIVATE -O3 -march=native -ffast-math)
     target_compile_options(corevector_bin PRIVATE -O3 -march=native -ffast-math)
     target_compile_options(corevector_server PRIVATE -O3 -march=native -ffast-math)
 endif()
