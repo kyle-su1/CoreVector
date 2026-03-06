@@ -161,3 +161,74 @@ TEST(FlatIndexTest, Search_DimensionMismatch) {
 
   EXPECT_THROW(index.Search(wrong_query, 1), std::invalid_argument);
 }
+
+// ============================================================================
+// Payload Tests
+// ============================================================================
+
+TEST(FlatIndexTest, Payload_ReturnedBySearch) {
+  FlatIndex index(3);
+
+  Vector v0(3), v1(3), v2(3);
+  v0.data = {10.0f, 10.0f, 10.0f};
+  v1.data = {1.0f, 1.0f, 1.0f};
+  v2.data = {5.0f, 5.0f, 5.0f};
+
+  index.Add(v0, "Far away vector");
+  index.Add(v1, "Closest vector");
+  index.Add(v2, "Medium distance");
+
+  Vector query(3);
+  query.data = {1.1f, 1.1f, 1.1f};
+
+  auto results = index.Search(query, 3);
+
+  ASSERT_EQ(results.size(), 3);
+  EXPECT_EQ(results[0].id, 1);
+  EXPECT_EQ(results[0].payload, "Closest vector");
+  EXPECT_EQ(results[1].payload, "Medium distance");
+  EXPECT_EQ(results[2].payload, "Far away vector");
+}
+
+TEST(FlatIndexTest, Payload_EmptyByDefault) {
+  FlatIndex index(2);
+
+  Vector v(2);
+  v.data = {1.0f, 2.0f};
+  index.Add(v); // No payload provided
+
+  Vector query(2);
+  query.data = {1.0f, 2.0f};
+
+  auto results = index.Search(query, 1);
+  ASSERT_EQ(results.size(), 1);
+  EXPECT_EQ(results[0].payload, "");
+}
+
+TEST(FlatIndexTest, Payload_ReturnedBySearchParallel) {
+  FlatIndex index(16);
+
+  std::mt19937 gen(42);
+  std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+
+  for (int i = 0; i < 200; ++i) {
+    Vector v(16);
+    for (size_t j = 0; j < 16; ++j) {
+      v.data[j] = dist(gen);
+    }
+    index.Add(v, "payload_" + std::to_string(i));
+  }
+
+  Vector query(16);
+  for (size_t j = 0; j < 16; ++j) {
+    query.data[j] = dist(gen);
+  }
+
+  auto results = index.SearchParallel(query, 5);
+  ASSERT_EQ(results.size(), 5);
+
+  for (const auto &r : results) {
+    EXPECT_EQ(r.payload, "payload_" + std::to_string(r.id))
+        << "Payload mismatch for id " << r.id;
+  }
+}

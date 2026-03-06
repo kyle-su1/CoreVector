@@ -35,15 +35,32 @@ def run():
     stub = vector_db_pb2_grpc.VectorDBStub(channel)
 
     DIM = 128
-    NUM_VECTORS = 1000
     K = 5
 
-    # ----- Insert -----
-    print(f"Inserting {NUM_VECTORS} random vectors (dim={DIM})...")
+    # Sample payloads — sentences that would represent real embedded text
+    sample_payloads = [
+        "The quick brown fox jumps over the lazy dog",
+        "Apple announces new MacBook Pro with M4 chip",
+        "How to train a neural network from scratch",
+        "Best Italian restaurants near downtown San Francisco",
+        "Introduction to quantum computing for beginners",
+        "NASA discovers water on distant exoplanet",
+        "Python vs C++ performance comparison guide",
+        "Stock market reaches all-time high today",
+        "Recipe for homemade sourdough bread",
+        "Understanding memory-mapped I/O in operating systems",
+    ]
+
+    NUM_VECTORS = len(sample_payloads)
+
+    # ----- Insert with Payloads -----
+    print(f"Inserting {NUM_VECTORS} vectors with text payloads (dim={DIM})...")
     vectors = []
-    for _ in range(NUM_VECTORS):
+    for i, payload in enumerate(sample_payloads):
+        random.seed(i)  # Reproducible vectors
         vec = vector_db_pb2.VectorData(
-            values=[random.uniform(-1.0, 1.0) for _ in range(DIM)]
+            values=[random.uniform(-1.0, 1.0) for _ in range(DIM)],
+            payload=payload,
         )
         vectors.append(vec)
 
@@ -54,6 +71,7 @@ def run():
     print(f"  Insert latency: {elapsed * 1000:.2f} ms")
 
     # ----- Search -----
+    random.seed(0)  # Use vector 0's seed to find "The quick brown fox"
     query = [random.uniform(-1.0, 1.0) for _ in range(DIM)]
     print(f"\nSearching for top {K} nearest neighbors...")
 
@@ -64,7 +82,7 @@ def run():
     print(f"  Search latency: {elapsed * 1000:.2f} ms")
     print(f"  Results:")
     for r in response.results:
-        print(f"    ID: {r.id:>5}  Distance: {r.distance:.6f}")
+        print(f"    ID: {r.id:>5}  Distance: {r.distance:.6f}  Payload: \"{r.payload}\"")
 
     # ----- Save -----
     print("\nSaving index to disk...")
@@ -81,10 +99,11 @@ def run():
     response = stub.Search(vector_db_pb2.SearchRequest(query=query, k=K))
     print(f"  Results:")
     for r in response.results:
-        print(f"    ID: {r.id:>5}  Distance: {r.distance:.6f}")
+        print(f"    ID: {r.id:>5}  Distance: {r.distance:.6f}  Payload: \"{r.payload}\"")
 
     print("\n✅ All operations completed successfully!")
 
 
 if __name__ == "__main__":
     run()
+

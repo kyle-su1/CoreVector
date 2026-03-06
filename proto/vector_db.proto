@@ -25,6 +25,7 @@ message InsertRequest {
 
 message VectorData {
   repeated float values = 1;
+  string payload = 2; // Optional text metadata attached to the vector
 }
 
 message InsertResponse {
@@ -45,6 +46,7 @@ message SearchResponse {
 message SearchResult {
   int64 id = 1;
   float distance = 2;
+  string payload = 3; // Text metadata associated with this vector
 }
 
 // ----- Save -----

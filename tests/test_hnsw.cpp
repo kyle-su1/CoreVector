@@ -174,3 +174,44 @@ TEST(HnswIndexTest, EfSearch_AffectsRecall) {
   EXPECT_GE(high_matches, low_matches)
       << "Higher ef_search should not decrease recall";
 }
+
+// ============================================================================
+// Payload Tests
+// ============================================================================
+
+TEST(HnswIndexTest, Payload_ReturnedBySearch) {
+  HnswIndex index(3, /*M=*/4, /*ef_construction=*/50);
+
+  Vector v0(3), v1(3), v2(3);
+  v0.data = {10.0f, 10.0f, 10.0f};
+  v1.data = {1.0f, 1.0f, 1.0f};
+  v2.data = {5.0f, 5.0f, 5.0f};
+
+  index.Add(v0, "Far away vector");
+  index.Add(v1, "Closest vector");
+  index.Add(v2, "Medium distance");
+
+  Vector query(3);
+  query.data = {1.1f, 1.1f, 1.1f};
+
+  auto results = index.Search(query, 3, /*ef_search=*/10);
+
+  ASSERT_EQ(results.size(), 3);
+  EXPECT_EQ(results[0].id, 1);
+  EXPECT_EQ(results[0].payload, "Closest vector");
+}
+
+TEST(HnswIndexTest, Payload_EmptyByDefault) {
+  HnswIndex index(2, /*M=*/4, /*ef_construction=*/50);
+
+  Vector v(2);
+  v.data = {1.0f, 2.0f};
+  index.Add(v); // No payload
+
+  Vector query(2);
+  query.data = {1.0f, 2.0f};
+
+  auto results = index.Search(query, 1);
+  ASSERT_EQ(results.size(), 1);
+  EXPECT_EQ(results[0].payload, "");
+}

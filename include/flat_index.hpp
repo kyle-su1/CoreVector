@@ -1,5 +1,6 @@
 #pragma once
 
+#include "types.hpp"
 #include "vector.hpp"
 #include <algorithm>
 #include <fcntl.h>
@@ -15,33 +16,21 @@
 
 namespace corevector {
 
-// Result of a nearest neighbor search
-#ifndef COREVECTOR_SEARCH_RESULT_DEFINED
-#define COREVECTOR_SEARCH_RESULT_DEFINED
-struct SearchResult {
-  size_t id;
-  float distance;
-
-  bool operator<(const SearchResult &other) const {
-    return distance < other.distance; // Max-heap behavior
-  }
-};
-#endif
-
 class FlatIndex {
 public:
   explicit FlatIndex(size_t dim) : dim_(dim) {}
 
-  // Add a vector to the index
-  void Add(const Vector &vec) {
+  // Add a vector to the index with an optional text payload
+  void Add(const Vector &vec, const std::string &payload = "") {
     if (vec.dim() != dim_) {
       throw std::invalid_argument(
           "Vector dimension does not match index dimension");
     }
     vectors_.push_back(vec);
+    payloads_.push_back(payload);
   }
 
-  // Add multiple vectors to the index
+  // Add multiple vectors to the index (no payloads)
   void Add(const std::vector<Vector> &vecs) {
     for (const auto &vec : vecs) {
       Add(vec);
@@ -75,10 +64,10 @@ public:
       }
 
       if (pq.size() < k) {
-        pq.push({i, dist});
+        pq.push({i, dist, ""});
       } else if (dist < pq.top().distance) {
         pq.pop();
-        pq.push({i, dist});
+        pq.push({i, dist, ""});
       }
     }
 
@@ -141,7 +130,9 @@ public:
     std::vector<SearchResult> results(k);
     for (size_t i = 0; i < k; ++i) {
       size_t id = indices[i];
-      results[i] = {id, distances[id]};
+      std::string pl =
+          (!use_mmap_ && id < payloads_.size()) ? payloads_[id] : "";
+      results[i] = {id, distances[id], std::move(pl)};
     }
 
     return results;
@@ -161,9 +152,15 @@ public:
 
     // Write contiguous vector data
     for (const auto &vec : vectors_) {
-      // write the float array directly
       out.write(reinterpret_cast<const char *>(vec.data.data()),
                 dim_ * sizeof(float));
+    }
+
+    // Write payloads: for each, write string length then string bytes
+    for (const auto &payload : payloads_) {
+      size_t len = payload.size();
+      out.write(reinterpret_cast<const char *>(&len), sizeof(size_t));
+      out.write(payload.data(), len);
     }
 
     if (!out) {
@@ -204,6 +201,20 @@ public:
                    dim_ * sizeof(float))) {
         throw std::runtime_error("Failed to read vector data from file: " +
                                  filename);
+      }
+    }
+
+    // Read payloads (if present in the file)
+    payloads_.resize(num_vectors);
+    for (size_t i = 0; i < num_vectors; ++i) {
+      size_t len = 0;
+      if (!in.read(reinterpret_cast<char *>(&len), sizeof(size_t))) {
+        // No payloads in file (legacy format) — leave empty strings
+        break;
+      }
+      payloads_[i].resize(len);
+      if (len > 0) {
+        in.read(&payloads_[i][0], len);
       }
     }
   }
@@ -266,6 +277,7 @@ public:
 private:
   size_t dim_;
   std::vector<Vector> vectors_;
+  std::vector<std::string> payloads_; // Parallel array of text metadata
 
   // mmap properties
   bool use_mmap_ = false;
@@ -280,8 +292,13 @@ private:
     // Priority queue pops the LARGEST element first, so we fill the array
     // backwards
     for (int i = static_cast<int>(pq.size()) - 1; i >= 0; --i) {
-      results[i] = pq.top();
+      auto r = pq.top();
       pq.pop();
+      // Attach payload if available
+      if (!use_mmap_ && r.id < payloads_.size()) {
+        r.payload = payloads_[r.id];
+      }
+      results[i] = std::move(r);
     }
     return results;
   }

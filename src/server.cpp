@@ -1,4 +1,5 @@
 #include "flat_index.hpp"
+#include "types.hpp"
 #include "vector_db.grpc.pb.h"
 #include "vector_db.pb.h"
 
@@ -34,7 +35,7 @@ public:
       for (size_t i = 0; i < dim_; ++i) {
         v.data[i] = vec_data.values(i);
       }
-      index_.Add(v);
+      index_.Add(v, vec_data.payload());
     }
 
     response->set_total_vectors(index_.Size());
@@ -63,6 +64,7 @@ public:
       auto *sr = response->add_results();
       sr->set_id(result.id);
       sr->set_distance(result.distance);
+      sr->set_payload(result.payload);
     }
 
     return Status::OK;

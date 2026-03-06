@@ -1,29 +1,17 @@
 #pragma once
 
+#include "types.hpp"
 #include "vector.hpp"
 #include <algorithm>
 #include <cmath>
 #include <queue>
 #include <random>
 #include <stdexcept>
+#include <string>
 #include <unordered_set>
 #include <vector>
 
 namespace corevector {
-
-// Forward declaration — SearchResult is defined in flat_index.hpp
-// We redefine it here so hnsw_index.hpp is self-contained
-#ifndef COREVECTOR_SEARCH_RESULT_DEFINED
-#define COREVECTOR_SEARCH_RESULT_DEFINED
-struct SearchResult {
-  size_t id;
-  float distance;
-
-  bool operator<(const SearchResult &other) const {
-    return distance < other.distance; // Max-heap: largest distance on top
-  }
-};
-#endif
 
 class HnswIndex {
 public:
@@ -44,7 +32,7 @@ public:
   /**
    * Insert a vector into the HNSW graph.
    */
-  void Add(const Vector &vec) {
+  void Add(const Vector &vec, const std::string &payload = "") {
     if (vec.dim() != dim_) {
       throw std::invalid_argument(
           "Vector dimension does not match index dimension");
@@ -59,6 +47,7 @@ public:
     node.max_layer = new_level;
     node.neighbors.resize(new_level + 1);
     nodes_.push_back(std::move(node));
+    payloads_.push_back(payload);
 
     // First node: just set it as entry point
     if (new_id == 0) {
@@ -143,6 +132,13 @@ public:
     // Return top-k from candidates (already sorted by distance)
     if (candidates.size() > k) {
       candidates.resize(k);
+    }
+
+    // Attach payloads to results
+    for (auto &r : candidates) {
+      if (r.id < payloads_.size()) {
+        r.payload = payloads_[r.id];
+      }
     }
     return candidates;
   }
@@ -332,9 +328,10 @@ private:
   size_t ef_construction_; // Beam width during insertion
   double m_L_;             // Level generation multiplier (1 / ln(M))
 
-  std::vector<HnswNode> nodes_; // All nodes in the graph
-  size_t entry_point_;          // ID of the entry point node
-  size_t max_level_;            // Current max layer in the graph
+  std::vector<HnswNode> nodes_;       // All nodes in the graph
+  std::vector<std::string> payloads_; // Parallel array of text metadata
+  size_t entry_point_;                // ID of the entry point node
+  size_t max_level_;                  // Current max layer in the graph
 
   // Random number generator for level assignment
   std::mt19937 level_gen_;
