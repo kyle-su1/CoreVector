@@ -1,6 +1,6 @@
 # CoreVector
 
-A vector database built from scratch in C++. I use vector databases and embedding APIs in full-stack projects all the time, and wanted to understand what's actually happening under the hood — how vectors get stored, indexed, and searched efficiently.
+A vector database built from scratch in C++. I use vector databases and embedding APIs in full-stack projects all the time, and wanted to understand what's actually happening under the hood: how vectors get stored, indexed, and searched efficiently.
 
 ## Features
 
@@ -27,7 +27,7 @@ A vector database built from scratch in C++. I use vector databases and embeddin
 
 ## Architecture
 
-**FlatIndex** does an exhaustive O(N) linear scan over all vectors — guaranteed exact results, optionally parallelized across CPU cores. **HnswIndex** builds a hierarchical graph (Hierarchical Navigable Small World) for approximate O(log N) search, trading a small amount of recall for dramatically faster queries at scale.
+**FlatIndex** does an exhaustive O(N) linear scan over all vectors. This provides guaranteed exact results, optionally parallelized across CPU cores. **HnswIndex** builds a hierarchical graph (Hierarchical Navigable Small World) for approximate O(log N) search, trading a small amount of recall for dramatically faster queries at scale.
 
 Both indexes support the same interface: `Add`, `Search`, `Save`, and `Load`.
 
