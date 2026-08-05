@@ -55,6 +55,11 @@ class VectorDBStub(object):
                 request_serializer=vector__db__pb2.LoadRequest.SerializeToString,
                 response_deserializer=vector__db__pb2.LoadResponse.FromString,
                 _registered_method=True)
+        self.GetAllVectors = channel.unary_unary(
+                '/corevector.api.VectorDB/GetAllVectors',
+                request_serializer=vector__db__pb2.GetAllVectorsRequest.SerializeToString,
+                response_deserializer=vector__db__pb2.GetAllVectorsResponse.FromString,
+                _registered_method=True)
 
 
 class VectorDBServicer(object):
@@ -89,6 +94,13 @@ class VectorDBServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetAllVectors(self, request, context):
+        """Enumerate every vector currently in the index (for visualization)
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_VectorDBServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -111,6 +123,11 @@ def add_VectorDBServicer_to_server(servicer, server):
                     servicer.Load,
                     request_deserializer=vector__db__pb2.LoadRequest.FromString,
                     response_serializer=vector__db__pb2.LoadResponse.SerializeToString,
+            ),
+            'GetAllVectors': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetAllVectors,
+                    request_deserializer=vector__db__pb2.GetAllVectorsRequest.FromString,
+                    response_serializer=vector__db__pb2.GetAllVectorsResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -222,6 +239,33 @@ class VectorDB(object):
             '/corevector.api.VectorDB/Load',
             vector__db__pb2.LoadRequest.SerializeToString,
             vector__db__pb2.LoadResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetAllVectors(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/corevector.api.VectorDB/GetAllVectors',
+            vector__db__pb2.GetAllVectorsRequest.SerializeToString,
+            vector__db__pb2.GetAllVectorsResponse.FromString,
             options,
             channel_credentials,
             insecure,

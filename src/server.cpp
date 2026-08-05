@@ -85,6 +85,25 @@ public:
     return Status::OK;
   }
 
+  // Enumerate every vector in the index (for visualization)
+  Status GetAllVectors(ServerContext *context,
+                       const corevector::api::GetAllVectorsRequest *request,
+                       corevector::api::GetAllVectorsResponse *response) override {
+    response->set_dim(static_cast<int64_t>(dim_));
+    for (size_t i = 0; i < index_.Size(); ++i) {
+      ::corevector::Vector vec = index_.GetVector(i);
+      auto *record = response->add_records();
+      record->set_id(static_cast<int64_t>(i));
+      record->set_payload(index_.GetPayload(i));
+      auto *values = record->mutable_values();
+      values->Reserve(static_cast<int>(dim_));
+      for (size_t j = 0; j < dim_; ++j) {
+        values->Add(vec.data[j]);
+      }
+    }
+    return Status::OK;
+  }
+
   // Load the index from disk
   Status Load(ServerContext *context,
               const corevector::api::LoadRequest *request,

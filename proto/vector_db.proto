@@ -15,6 +15,9 @@ service VectorDB {
 
   // Load the index from a binary file on disk
   rpc Load(LoadRequest) returns (LoadResponse);
+
+  // Enumerate every vector currently in the index (for visualization)
+  rpc GetAllVectors(GetAllVectorsRequest) returns (GetAllVectorsResponse);
 }
 
 // ----- Insert -----
@@ -70,4 +73,19 @@ message LoadResponse {
   bool success = 1;
   string message = 2;
   int64 total_vectors = 3;
+}
+
+// ----- GetAllVectors -----
+
+message GetAllVectorsRequest {}
+
+message VectorRecord {
+  int64 id = 1;
+  repeated float values = 2;
+  string payload = 3;
+}
+
+message GetAllVectorsResponse {
+  repeated VectorRecord records = 1;
+  int64 dim = 2;
 }

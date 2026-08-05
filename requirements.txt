@@ -1,3 +1,8 @@
 grpcio==1.78.0
 grpcio-tools==1.78.0
 protobuf==6.33.5
+
+# Visualization BFF (FastAPI service that bridges the browser to gRPC)
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+numpy==2.2.1

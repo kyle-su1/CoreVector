@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fvector_db.proto\x12\x0e\x63orevector.api\"<\n\rInsertRequest\x12+\n\x07vectors\x18\x01 \x03(\x0b\x32\x1a.corevector.api.VectorData\"\x1c\n\nVectorData\x12\x0e\n\x06values\x18\x01 \x03(\x02\"\'\n\x0eInsertResponse\x12\x15\n\rtotal_vectors\x18\x01 \x01(\x03\")\n\rSearchRequest\x12\r\n\x05query\x18\x01 \x03(\x02\x12\t\n\x01k\x18\x02 \x01(\x05\"?\n\x0eSearchResponse\x12-\n\x07results\x18\x01 \x03(\x0b\x32\x1c.corevector.api.SearchResult\",\n\x0cSearchResult\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x10\n\x08\x64istance\x18\x02 \x01(\x02\"\x1f\n\x0bSaveRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"0\n\x0cSaveResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x1f\n\x0bLoadRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"G\n\x0cLoadResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x15\n\rtotal_vectors\x18\x03 \x01(\x03\x32\xa2\x02\n\x08VectorDB\x12G\n\x06Insert\x12\x1d.corevector.api.InsertRequest\x1a\x1e.corevector.api.InsertResponse\x12G\n\x06Search\x12\x1d.corevector.api.SearchRequest\x1a\x1e.corevector.api.SearchResponse\x12\x41\n\x04Save\x12\x1b.corevector.api.SaveRequest\x1a\x1c.corevector.api.SaveResponse\x12\x41\n\x04Load\x12\x1b.corevector.api.LoadRequest\x1a\x1c.corevector.api.LoadResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0fvector_db.proto\x12\x0e\x63orevector.api\"<\n\rInsertRequest\x12+\n\x07vectors\x18\x01 \x03(\x0b\x32\x1a.corevector.api.VectorData\"-\n\nVectorData\x12\x0e\n\x06values\x18\x01 \x03(\x02\x12\x0f\n\x07payload\x18\x02 \x01(\t\"\'\n\x0eInsertResponse\x12\x15\n\rtotal_vectors\x18\x01 \x01(\x03\")\n\rSearchRequest\x12\r\n\x05query\x18\x01 \x03(\x02\x12\t\n\x01k\x18\x02 \x01(\x05\"?\n\x0eSearchResponse\x12-\n\x07results\x18\x01 \x03(\x0b\x32\x1c.corevector.api.SearchResult\"=\n\x0cSearchResult\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x10\n\x08\x64istance\x18\x02 \x01(\x02\x12\x0f\n\x07payload\x18\x03 \x01(\t\"\x1f\n\x0bSaveRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"0\n\x0cSaveResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x1f\n\x0bLoadRequest\x12\x10\n\x08\x66ilename\x18\x01 \x01(\t\"G\n\x0cLoadResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\x12\x15\n\rtotal_vectors\x18\x03 \x01(\x03\"\x16\n\x14GetAllVectorsRequest\";\n\x0cVectorRecord\x12\n\n\x02id\x18\x01 \x01(\x03\x12\x0e\n\x06values\x18\x02 \x03(\x02\x12\x0f\n\x07payload\x18\x03 \x01(\t\"S\n\x15GetAllVectorsResponse\x12-\n\x07records\x18\x01 \x03(\x0b\x32\x1c.corevector.api.VectorRecord\x12\x0b\n\x03\x64im\x18\x02 \x01(\x03\x32\x80\x03\n\x08VectorDB\x12G\n\x06Insert\x12\x1d.corevector.api.InsertRequest\x1a\x1e.corevector.api.InsertResponse\x12G\n\x06Search\x12\x1d.corevector.api.SearchRequest\x1a\x1e.corevector.api.SearchResponse\x12\x41\n\x04Save\x12\x1b.corevector.api.SaveRequest\x1a\x1c.corevector.api.SaveResponse\x12\x41\n\x04Load\x12\x1b.corevector.api.LoadRequest\x1a\x1c.corevector.api.LoadResponse\x12\\\n\rGetAllVectors\x12$.corevector.api.GetAllVectorsRequest\x1a%.corevector.api.GetAllVectorsResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -34,23 +34,29 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_INSERTREQUEST']._serialized_start=35
   _globals['_INSERTREQUEST']._serialized_end=95
   _globals['_VECTORDATA']._serialized_start=97
-  _globals['_VECTORDATA']._serialized_end=125
-  _globals['_INSERTRESPONSE']._serialized_start=127
-  _globals['_INSERTRESPONSE']._serialized_end=166
-  _globals['_SEARCHREQUEST']._serialized_start=168
-  _globals['_SEARCHREQUEST']._serialized_end=209
-  _globals['_SEARCHRESPONSE']._serialized_start=211
-  _globals['_SEARCHRESPONSE']._serialized_end=274
-  _globals['_SEARCHRESULT']._serialized_start=276
-  _globals['_SEARCHRESULT']._serialized_end=320
-  _globals['_SAVEREQUEST']._serialized_start=322
-  _globals['_SAVEREQUEST']._serialized_end=353
-  _globals['_SAVERESPONSE']._serialized_start=355
-  _globals['_SAVERESPONSE']._serialized_end=403
-  _globals['_LOADREQUEST']._serialized_start=405
-  _globals['_LOADREQUEST']._serialized_end=436
-  _globals['_LOADRESPONSE']._serialized_start=438
-  _globals['_LOADRESPONSE']._serialized_end=509
-  _globals['_VECTORDB']._serialized_start=512
-  _globals['_VECTORDB']._serialized_end=802
+  _globals['_VECTORDATA']._serialized_end=142
+  _globals['_INSERTRESPONSE']._serialized_start=144
+  _globals['_INSERTRESPONSE']._serialized_end=183
+  _globals['_SEARCHREQUEST']._serialized_start=185
+  _globals['_SEARCHREQUEST']._serialized_end=226
+  _globals['_SEARCHRESPONSE']._serialized_start=228
+  _globals['_SEARCHRESPONSE']._serialized_end=291
+  _globals['_SEARCHRESULT']._serialized_start=293
+  _globals['_SEARCHRESULT']._serialized_end=354
+  _globals['_SAVEREQUEST']._serialized_start=356
+  _globals['_SAVEREQUEST']._serialized_end=387
+  _globals['_SAVERESPONSE']._serialized_start=389
+  _globals['_SAVERESPONSE']._serialized_end=437
+  _globals['_LOADREQUEST']._serialized_start=439
+  _globals['_LOADREQUEST']._serialized_end=470
+  _globals['_LOADRESPONSE']._serialized_start=472
+  _globals['_LOADRESPONSE']._serialized_end=543
+  _globals['_GETALLVECTORSREQUEST']._serialized_start=545
+  _globals['_GETALLVECTORSREQUEST']._serialized_end=567
+  _globals['_VECTORRECORD']._serialized_start=569
+  _globals['_VECTORRECORD']._serialized_end=628
+  _globals['_GETALLVECTORSRESPONSE']._serialized_start=630
+  _globals['_GETALLVECTORSRESPONSE']._serialized_end=713
+  _globals['_VECTORDB']._serialized_start=716
+  _globals['_VECTORDB']._serialized_end=1100
 # @@protoc_insertion_point(module_scope)

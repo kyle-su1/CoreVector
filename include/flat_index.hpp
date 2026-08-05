@@ -274,6 +274,31 @@ public:
   size_t Size() const { return use_mmap_ ? num_vectors_ : vectors_.size(); }
   size_t Dim() const { return dim_; }
 
+  // Read access to a stored vector by id (for enumeration / visualization).
+  // Copies out so it works for both the RAM and mmap-backed paths.
+  Vector GetVector(size_t i) const {
+    if (i >= Size()) {
+      throw std::out_of_range("Vector index out of range");
+    }
+    if (use_mmap_) {
+      Vector v(dim_);
+      const float *src = mmap_data_ + (i * dim_);
+      std::copy(src, src + dim_, v.data.begin());
+      return v;
+    }
+    return vectors_[i];
+  }
+
+  // Read access to a vector's payload by id. Empty when mmap-backed (payloads
+  // are not mapped) or out of range, matching Search() behavior.
+  const std::string &GetPayload(size_t i) const {
+    static const std::string kEmpty;
+    if (use_mmap_ || i >= payloads_.size()) {
+      return kEmpty;
+    }
+    return payloads_[i];
+  }
+
 private:
   size_t dim_;
   std::vector<Vector> vectors_;
